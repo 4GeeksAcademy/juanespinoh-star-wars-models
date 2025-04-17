@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean,ForeignKey,Table,Column
+from sqlalchemy import String, Boolean,ForeignKey,Table,Column,Numeric,Float
 from sqlalchemy.orm import Mapped, mapped_column,relationship
 from datetime import datetime,timezone
 
@@ -40,6 +40,8 @@ class User(db.Model):
         return {
             "id": self.id,
             "email": self.email,
+            "name":self.name,
+            "is_active":self.is_active,
             # do not serialize the password, its a security breach
         }
 
@@ -58,6 +60,10 @@ class Personaje(db.Model):
         return {
             "id": self.id,
             "name": self.name,
+            "birth_year": self.birth_year,
+            "gender": self.gender,
+            "height": self.height,
+            "image_url": self.image_url,
             # do not serialize the password, its a security breach
         }
     
@@ -77,13 +83,22 @@ class Planeta(db.Model):
         return {
             "id": self.id,
             "name": self.name,
+            "climate": self.climate,
+            "diameter": self.diameter,
+            "gravity": self.gravity,
+            "orbital_period": self.orbital_period,
             # do not serialize the password, its a security breach
         }
 
 class Nave(db.Model):
     __tablename__="naves"
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(100),  nullable=False)
+    cargo_capacity: Mapped[int] = mapped_column( nullable=False)
+    cost_in_credits: Mapped[int] = mapped_column(Numeric(precision=5),nullable=False)
+    crew: Mapped[int] = mapped_column( Numeric(precision=5),nullable=False)
+    length: Mapped[int] = mapped_column( Numeric(precision=5, scale=2),nullable=False)
+
 
     favotiro_por:Mapped[list["User"]]=relationship(secondary=association_usuario_nave,back_populates="naves_favoritos")
     
@@ -91,5 +106,9 @@ class Nave(db.Model):
         return {
             "id": self.id,
             "name": self.name,
+            "cargo_capacity": self.cargo_capacity,
+            "cost_in_credits": self.cost_in_credits,
+            "crew": self.crew,
+            "length": self.length,
             # do not serialize the password, its a security breach
         }
